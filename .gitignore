@@ -12,6 +12,7 @@
 
 # testing
 /coverage
+test.tsx
 
 # next.js
 /.next/

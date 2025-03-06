@@ -14,13 +14,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
-    // Set an authentication cookie
+    // Set HTTP-only cookies for credentials
     const nextResponse = NextResponse.json({ success: true });
-    nextResponse.cookies.set('isAuthenticated', 'true', {
+    nextResponse.cookies.set('canvasUrl', cleanUrl, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 60 * 60 * 24, // 1 day
+    });
+    nextResponse.cookies.set('apiToken', apiToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 24,
     });
 
     return nextResponse;

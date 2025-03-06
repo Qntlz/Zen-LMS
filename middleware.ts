@@ -1,21 +1,21 @@
-// middleware.ts
 import { NextResponse, type NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isLoginPage = path === '/login';
-  const isAuthenticated = request.cookies.get('isAuthenticated')?.value === 'true';
 
-  // Redirect authenticated users from login to dashboard
-  if (isLoginPage) {
-    if (isAuthenticated) {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
-    }
-    return NextResponse.next();
+  // Check for credentials in cookies
+  const hasCredentials = 
+    request.cookies.has('canvasUrl') && 
+    request.cookies.has('apiToken');
+
+  // Redirect authenticated users away from login
+  if (isLoginPage && hasCredentials) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   // Redirect unauthenticated users to login
-  if (!isAuthenticated) {
+  if (!isLoginPage && !hasCredentials) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
@@ -23,7 +23,7 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: [
-      '/((?!api|_next/static|_next/image|favicon.ico|Zen-LMS_Logo.svg|login).*)',
-    ],
-  };
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico|Zen-LMS_Logo.svg|login).*)',
+  ],
+};
